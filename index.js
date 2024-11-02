@@ -8,13 +8,14 @@ const port = process.env.PORT || 8080;
 // Middleware لتفسير الجسم (body) كـ JSON
 app.use(express.json());
 
-const uri = "mongodb+srv://hussienamgad123:eWnRKwUqLkr2rmPZ@cluster0.fkxjm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const uri = "mongodb+srv://hussienamgad123:eWnRKwUqLkr2rmPZ@cluster0.fkxjm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0&ssl=true";
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
     strict: true,
     deprecationErrors: true,
-  }
+  },
+  tlsAllowInvalidCertificates: true // السماح بالشهادات غير الصالحة
 });
 
 // إضافة CORS كوسيط
