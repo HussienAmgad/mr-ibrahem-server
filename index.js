@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const jwt = require('jsonwebtoken'); // إضافة مكتبة JWT
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -31,7 +32,89 @@ client.connect()
     console.error('MongoDB connection error:', err);
   });
 
-// دالة لإضافة طالب جديد
+  app.post('/loginstudent', async (req, res) => {
+    const { phonestudent, phoneparent } = req.body;
+  
+    if (!phonestudent || !phoneparent) {
+      return res.status(400).json({ message: 'رقم هاتف الطالب وولي الأمر مطلوبان' });
+    }
+  
+    try {
+      const database = client.db("Mr");
+      const collection = database.collection("student");
+  
+      // البحث عن الطالب باستخدام رقم الهاتف
+      const student = await collection.findOne({
+        phonestudent: phonestudent,
+        phoneparent: phoneparent
+      });
+  
+      if (!student) {
+        return res.status(404).json({ message: 'الطالب أو رقم الهاتف غير صحيح' });
+      }
+  
+      // توليد التوكن
+      const token = jwt.sign({ userId: student._id }, 'your-secret-key', { expiresIn: '1h' });
+  
+      // إعادة التوكن مع بيانات الطالب
+      res.status(200).json({
+        message: 'تم تسجيل الدخول بنجاح',
+        token: token,
+        student: {
+          name: student.name,
+          phonestudent: student.phonestudent,
+          phoneparent: student.phoneparent
+        }
+      });
+  
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'حدث خطأ أثناء تسجيل الدخول', error: error.message });
+    }
+  });
+  app.post('/Loginassistant', async (req, res) => {
+    const { username, password } = req.body;
+  
+    if (!username || !password) {
+      return res.status(400).json({ message: 'رقم هاتف الطالب وولي الأمر مطلوبان' });
+    }
+  
+    try {
+      const database = client.db("Mr");
+      const collection = database.collection("users");
+  
+      // البحث عن الطالب باستخدام رقم الهاتف
+      const student = await collection.findOne({
+        username: username,
+        password: password
+      });
+  
+      if (!student) {
+        return res.status(404).json({ message: 'الطالب أو رقم الهاتف غير صحيح' });
+      }
+  
+      // توليد التوكن
+      const token = jwt.sign({ userId: student._id }, 'your-secret-key', { expiresIn: '1h' });
+  
+      // إعادة التوكن مع بيانات الطالب
+      res.status(200).json({
+        message: 'تم تسجيل الدخول بنجاح',
+        token: token,
+        student: {
+          name: student.name,
+          username: student.username,
+          password: student.password
+        }
+      });
+  
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'حدث خطأ أثناء تسجيل الدخول', error: error.message });
+    }
+  });
+  
+  const secretKey = '27071977'; // مفتاح سري لتوقيع التوكن (يجب أن يكون سريًا وآمنًا)
+
 app.post('/addstudent', async (req, res) => {
   try {
     const database = client.db("Mr");
@@ -51,13 +134,32 @@ app.post('/addstudent', async (req, res) => {
       date: new Date() // إضافة التاريخ والوقت الحالي
     };
 
+    // إدخال الطالب في قاعدة البيانات
     await collection.insertOne(newStudent);
-    res.status(201).json({ message: 'تم إضافة الطالب بنجاح', student: newStudent });
+
+    // إنشاء التوكن بناءً على بيانات الطالب
+    const token = jwt.sign(
+      {
+        id: newStudent.id,
+        name: newStudent.name,
+        grade: newStudent.grade,
+      },
+      secretKey,
+      { expiresIn: '1h' } // تعيين مدة انتهاء التوكن
+    );
+
+    // إرسال استجابة مع التوكن والطالب المضاف
+    res.status(201).json({
+      message: 'تم إضافة الطالب بنجاح',
+      student: newStudent,
+      token: token,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'حدث خطأ أثناء إضافة الطالب', error: error.message });
   }
 });
+
 
 // دالة لإضافة طالب إلى prep1
 // دالة لإضافة عدة طلاب إلى prep1
