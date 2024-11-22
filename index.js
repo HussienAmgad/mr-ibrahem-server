@@ -1,3 +1,4 @@
+const secretKey = '27071977'; // مفتاح سري لتوقيع التوكن (يجب أن يكون سريًا وآمنًا)
 const express = require('express');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
@@ -53,57 +54,27 @@ client.connect()
         return res.status(404).json({ message: 'الطالب أو رقم الهاتف غير صحيح' });
       }
   
-      // توليد التوكن
-      const token = jwt.sign({ userId: student._id }, 'your-secret-key', { expiresIn: '1h' });
-  
-      // إعادة التوكن مع بيانات الطالب
-      res.status(200).json({
-        message: 'تم تسجيل الدخول بنجاح',
-        token: token,
-        student: {
+      // توليد التوكن مع فترة صلاحية
+      const token = jwt.sign({
+          id: student._id,  // استخدم _id بدلاً من id إذا كان موجودًا في قاعدة البيانات
           name: student.name,
+          phoneparent: student.phoneparent,
           phonestudent: student.phonestudent,
-          phoneparent: student.phoneparent
-        }
-      });
-  
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'حدث خطأ أثناء تسجيل الدخول', error: error.message });
-    }
-  });
-  app.post('/Loginassistant', async (req, res) => {
-    const { username, password } = req.body;
-  
-    if (!username || !password) {
-      return res.status(400).json({ message: 'رقم هاتف الطالب وولي الأمر مطلوبان' });
-    }
-  
-    try {
-      const database = client.db("Mr");
-      const collection = database.collection("users");
-  
-      // البحث عن الطالب باستخدام رقم الهاتف
-      const student = await collection.findOne({
-        username: username,
-        password: password
-      });
-  
-      if (!student) {
-        return res.status(404).json({ message: 'الطالب أو رقم الهاتف غير صحيح' });
-      }
-  
-      // توليد التوكن
-      const token = jwt.sign({ userId: student._id }, 'your-secret-key', { expiresIn: '1h' });
+          grade: student.grade,
+          center: student.center,
+      }, '27071977', { expiresIn: '1h' });  // تحديد فترة الصلاحية
   
       // إعادة التوكن مع بيانات الطالب
       res.status(200).json({
         message: 'تم تسجيل الدخول بنجاح',
         token: token,
         student: {
+          id: student.id,  // استخدم _id بدلاً من id إذا كان موجودًا في قاعدة البيانات
           name: student.name,
-          username: student.username,
-          password: student.password
+          phoneparent: student.phoneparent,
+          phonestudent: student.phonestudent,
+          grade: student.grade,
+          center: student.center,
         }
       });
   
@@ -112,8 +83,47 @@ client.connect()
       res.status(500).json({ message: 'حدث خطأ أثناء تسجيل الدخول', error: error.message });
     }
   });
-  
-  const secretKey = '27071977'; // مفتاح سري لتوقيع التوكن (يجب أن يكون سريًا وآمنًا)
+app.post('/Loginassistant', async (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({ message: 'رقم هاتف الطالب وولي الأمر مطلوبان' });
+  }
+
+  try {
+    const database = client.db("Mr");
+    const collection = database.collection("users");
+
+    // البحث عن الطالب باستخدام رقم الهاتف
+    const student = await collection.findOne({
+      username: username,
+      password: password
+    });
+
+    if (!student) {
+      return res.status(404).json({ message: 'الطالب أو رقم الهاتف غير صحيح' });
+    }
+
+    // توليد التوكن
+    const token = jwt.sign({ userId: student._id }, 'your-secret-key', { expiresIn: '1h' });
+
+    // إعادة التوكن مع بيانات الطالب
+    res.status(200).json({
+      message: 'تم تسجيل الدخول بنجاح',
+      token: token,
+      student: {
+        name: student.name,
+        username: student.username,
+        password: student.password
+      }
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'حدث خطأ أثناء تسجيل الدخول', error: error.message });
+  }
+});
+
 
 app.post('/addstudent', async (req, res) => {
   try {
@@ -142,13 +152,14 @@ app.post('/addstudent', async (req, res) => {
       {
         id: newStudent.id,
         name: newStudent.name,
+        phoneparent: newStudent.phoneparent,
+        phonestudent: newStudent.phonestudent,
         grade: newStudent.grade,
+        center: newStudent.center,
       },
       secretKey,
-      { expiresIn: '1h' } // تعيين مدة انتهاء التوكن
     );
 
-    // إرسال استجابة مع التوكن والطالب المضاف
     res.status(201).json({
       message: 'تم إضافة الطالب بنجاح',
       student: newStudent,
