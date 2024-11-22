@@ -134,6 +134,62 @@ app.post('/prep2', async (req, res) => {
     res.status(500).json({ message: 'حدث خطأ أثناء إضافة البيانات إلى prep1', error: error.message });
   }
 });
+// دالة لتحديث بيانات طالب في مجموعة محددة
+app.put('/update/:collection/:id', async (req, res) => {
+  try {
+    const { collection, id } = req.params;
+
+    // التحقق من أن id صالح
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({ error: 'Invalid ID format' });
+    }
+
+    const objectId = new ObjectId(id);
+    const database = client.db('Mr');
+    const collectionRef = database.collection(collection);
+
+    // استخراج البيانات المشتركة والطلاب من جسم الطلب
+    const { date, grade, center, students } = req.body;
+
+    if (!Array.isArray(students)) {
+      return res.status(400).json({ error: 'Invalid students format. Expected an array.' });
+    }
+
+    // إضافة grade و center و Exam و Attendance و Homework إلى كل طالب
+    const studentsWithAdditionalData = students.map((student) => ({
+      ...student,
+      grade: grade || null,
+      center: center || null,
+      Exam: student.Exam || null,
+      Attendance: student.Attendance || null,
+      Homework: student.Homework || null,
+    }));
+
+    // تكوين وثيقة البيانات للتحديث
+    const updateData = {
+      $set: {
+        date: date ? new Date(date) : new Date(),
+        grade: grade || null,
+        center: center || null,
+        students: studentsWithAdditionalData,
+      },
+    };
+
+    // تحديث الوثيقة في قاعدة البيانات
+    const result = await collectionRef.updateOne({ _id: objectId }, updateData);
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ error: 'Document not found.' });
+    }
+
+    res.status(200).json({ message: 'Document updated successfully.', update: updateData });
+  } catch (error) {
+    console.error('Error updating document:', error);
+    res.status(500).json({ error: 'Internal Server Error', details: error.message });
+  }
+});
+
+
 
 
 // دالة لإضافة عدة طلاب إلى prep3
