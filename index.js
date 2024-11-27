@@ -33,7 +33,7 @@ client.connect()
     console.error('MongoDB connection error:', err);
   });
 
-  app.post('/loginstudent', async (req, res) => {
+app.post('/loginstudent', async (req, res) => {
     const { phonestudent, phoneparent } = req.body;
   
     if (!phonestudent || !phoneparent) {
@@ -82,7 +82,7 @@ client.connect()
       console.error(error);
       res.status(500).json({ message: 'حدث خطأ أثناء تسجيل الدخول', error: error.message });
     }
-  });
+});
 app.post('/Loginassistant', async (req, res) => {
   const { username, password } = req.body;
 
@@ -123,8 +123,6 @@ app.post('/Loginassistant', async (req, res) => {
     res.status(500).json({ message: 'حدث خطأ أثناء تسجيل الدخول', error: error.message });
   }
 });
-
-
 app.post('/addstudent', async (req, res) => {
   try {
     const database = client.db("Mr");
@@ -141,6 +139,7 @@ app.post('/addstudent', async (req, res) => {
       phonestudent: req.body.phonestudent,
       grade: req.body.grade,
       center: req.body.center,
+      statues: "user",
       date: new Date() // إضافة التاريخ والوقت الحالي
     };
 
@@ -170,8 +169,6 @@ app.post('/addstudent', async (req, res) => {
     res.status(500).json({ message: 'حدث خطأ أثناء إضافة الطالب', error: error.message });
   }
 });
-
-
 // دالة لإضافة طالب إلى prep1
 // دالة لإضافة عدة طلاب إلى prep1
 app.post('/prep1', async (req, res) => {
@@ -209,8 +206,6 @@ app.post('/prep1', async (req, res) => {
     res.status(500).json({ message: 'حدث خطأ أثناء إضافة البيانات إلى prep1', error: error.message });
   }
 });
-
-
 // دالة لإضافة عدة طلاب إلى prep2
 app.post('/prep2', async (req, res) => {
   try {
@@ -301,10 +296,6 @@ app.put('/update/:collection/:id', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error', details: error.message });
   }
 });
-
-
-
-
 // دالة لإضافة عدة طلاب إلى prep3
 app.post('/prep3', async (req, res) => {
   try {
@@ -341,28 +332,6 @@ app.post('/prep3', async (req, res) => {
     res.status(500).json({ message: 'حدث خطأ أثناء إضافة البيانات إلى prep1', error: error.message });
   }
 });
-
-
-// دالة لإضافة مجموعة من الطلاب
-app.post('/addStudents', async (req, res) => {
-  try {
-    const database = client.db("Mr");
-    const collection = database.collection("student");
-
-    // إضافة التاريخ والوقت الحالي لكل طالب
-    const studentsWithDate = req.body.map(student => ({
-      ...student,
-      date: new Date() // إضافة التاريخ والوقت الحالي
-    }));
-
-    await collection.insertMany(studentsWithDate);
-    res.status(201).json({ message: 'تم إضافة الطلاب بنجاح', students: studentsWithDate });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'حدث خطأ أثناء إضافة الطلاب', error: error.message });
-  }
-});
-
 // دالة لاسترجاع جميع الطلاب
 app.get('/', async (req, res) => {
   try {
