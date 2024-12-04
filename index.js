@@ -62,6 +62,7 @@ app.post('/loginstudent', async (req, res) => {
           phonestudent: student.phonestudent,
           grade: student.grade,
           center: student.center,
+          statues: student.statues,
       }, '27071977', { expiresIn: '1h' });  // تحديد فترة الصلاحية
   
       // إعادة التوكن مع بيانات الطالب
@@ -73,6 +74,7 @@ app.post('/loginstudent', async (req, res) => {
           name: student.name,
           phoneparent: student.phoneparent,
           phonestudent: student.phonestudent,
+          statues: student.statues,
           grade: student.grade,
           center: student.center,
         }
