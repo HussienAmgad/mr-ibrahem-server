@@ -107,8 +107,12 @@ app.post('/Loginassistant', async (req, res) => {
     }
 
     // توليد التوكن
-    const token = jwt.sign({ userId: student._id }, 'your-secret-key', { expiresIn: '1h' });
-
+      // توليد التوكن مع فترة صلاحية
+      const token = jwt.sign({
+        id: student._id,  // استخدم _id بدلاً من id إذا كان موجودًا في قاعدة البيانات
+        name: student.name,
+        statues: student.statues,
+    }, '27071977', { expiresIn: '1h' });  // تحديد فترة الصلاحية
     // إعادة التوكن مع بيانات الطالب
     res.status(200).json({
       message: 'تم تسجيل الدخول بنجاح',
