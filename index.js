@@ -195,11 +195,15 @@ app.post('/prep1', async (req, res) => {
       Homework: student.Homework || null,
     }));
 
+    // حساب عدد الطلاب الحاضرين
+    const attendance = studentsWithAdditionalData.filter(student => student.Attendance === true).length;
+
     // تكوين وثيقة البيانات للإدخال
     const document = {
       date: date ? new Date(date) : new Date(),
       grade: grade || null,
       center: center || null,
+      attendance, // استخدام العدد المحسوب
       students: studentsWithAdditionalData,
     };
 
@@ -212,6 +216,7 @@ app.post('/prep1', async (req, res) => {
     res.status(500).json({ message: 'حدث خطأ أثناء إضافة البيانات إلى prep1', error: error.message });
   }
 });
+
 // دالة لإضافة عدة طلاب إلى prep2
 app.post('/prep2', async (req, res) => {
   try {
