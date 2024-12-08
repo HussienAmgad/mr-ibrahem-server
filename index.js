@@ -236,24 +236,28 @@ app.post('/prep2', async (req, res) => {
       Homework: student.Homework || null,
     }));
 
+    // حساب عدد الطلاب الحاضرين
+    const attendance = studentsWithAdditionalData.filter(student => student.Attendance === true).length;
+
     // تكوين وثيقة البيانات للإدخال
     const document = {
       date: date ? new Date(date) : new Date(),
       grade: grade || null,
       center: center || null,
+      attendance, // استخدام العدد المحسوب
       students: studentsWithAdditionalData,
     };
 
     // إدخال الوثيقة إلى قاعدة البيانات
     await collection.insertOne(document);
 
-    res.status(201).json({ message: 'تم إضافة البيانات بنجاح إلى prep1', data: document });
+    res.status(201).json({ message: 'تم إضافة البيانات بنجاح إلى prep2', data: document });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'حدث خطأ أثناء إضافة البيانات إلى prep1', error: error.message });
+    res.status(500).json({ message: 'حدث خطأ أثناء إضافة البيانات إلى prep2', error: error.message });
   }
 });
-// دالة لتحديث بيانات طالب في مجموعة محددة
+
 app.put('/update/:collection/:id', async (req, res) => {
   try {
     const { collection, id } = req.params;
@@ -307,7 +311,6 @@ app.put('/update/:collection/:id', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error', details: error.message });
   }
 });
-// دالة لإضافة عدة طلاب إلى prep3
 app.post('/prep3', async (req, res) => {
   try {
     const database = client.db("Mr");
@@ -326,24 +329,28 @@ app.post('/prep3', async (req, res) => {
       Homework: student.Homework || null,
     }));
 
+    // حساب عدد الطلاب الحاضرين
+    const attendance = studentsWithAdditionalData.filter(student => student.Attendance === true).length;
+
     // تكوين وثيقة البيانات للإدخال
     const document = {
       date: date ? new Date(date) : new Date(),
       grade: grade || null,
       center: center || null,
+      attendance, // استخدام العدد المحسوب
       students: studentsWithAdditionalData,
     };
 
     // إدخال الوثيقة إلى قاعدة البيانات
     await collection.insertOne(document);
 
-    res.status(201).json({ message: 'تم إضافة البيانات بنجاح إلى prep1', data: document });
+    res.status(201).json({ message: 'تم إضافة البيانات بنجاح إلى prep3', data: document });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'حدث خطأ أثناء إضافة البيانات إلى prep1', error: error.message });
+    res.status(500).json({ message: 'حدث خطأ أثناء إضافة البيانات إلى prep3', error: error.message });
   }
 });
-// دالة لاسترجاع جميع الطلاب
+
 app.get('/', async (req, res) => {
   try {
     const database = client.db("Mr");
@@ -487,5 +494,4 @@ app.get('/showprep3/:id', async (req, res) => {
   }
 });
 
-// بدء الخادم
 app.listen(port, () => console.log(`Listening to port ${port}`));
