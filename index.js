@@ -196,12 +196,14 @@ app.post('/prep1', async (req, res) => {
     // حساب عدد الطلاب الحاضرين
     const attendance = studentsWithAdditionalData.filter(student => student.Attendance === true).length;
 
+    const profit = attendance * 30; 
     // تكوين وثيقة البيانات للإدخال
     const document = {
       date: date ? new Date(date) : new Date(),
       grade: grade || null,
       center: center || null,
       attendance, // استخدام العدد المحسوب
+      profit, // استخدام العدد المحسوب
       students: studentsWithAdditionalData,
     };
 
@@ -235,12 +237,15 @@ app.post('/prep2', async (req, res) => {
     // حساب عدد الطلاب الحاضرين
     const attendance = studentsWithAdditionalData.filter(student => student.Attendance === true).length;
 
+    const profit = attendance * 30; 
+
     // تكوين وثيقة البيانات للإدخال
     const document = {
       date: date ? new Date(date) : new Date(),
       grade: grade || null,
       center: center || null,
       attendance, // استخدام العدد المحسوب
+      profit, // استخدام العدد المحسوب
       students: studentsWithAdditionalData,
     };
 
@@ -274,12 +279,15 @@ app.post('/prep3', async (req, res) => {
     // حساب عدد الطلاب الحاضرين
     const attendance = studentsWithAdditionalData.filter(student => student.Attendance === true).length;
 
+    const profit = attendance * 30; 
+
     // تكوين وثيقة البيانات للإدخال
     const document = {
       date: date ? new Date(date) : new Date(),
       grade: grade || null,
       center: center || null,
       attendance, // استخدام العدد المحسوب
+      profit, // استخدام العدد المحسوب
       students: studentsWithAdditionalData,
     };
     
