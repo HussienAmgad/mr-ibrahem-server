@@ -332,6 +332,7 @@ app.put('/update/:collection/:id', async (req, res) => {
 
     // حساب عدد الطلاب الحاضرين
     const attendance = studentsWithAdditionalData.filter(student => student.Attendance === true).length;
+    const profit = attendance * 30; 
 
     // تكوين وثيقة البيانات للتحديث
     const updateData = {
@@ -340,6 +341,7 @@ app.put('/update/:collection/:id', async (req, res) => {
         grade: grade || null,
         center: center || null,
         attendance, // استخدام العدد المحسوب
+        profit, // استخدام العدد المحسوب
         students: studentsWithAdditionalData,
       },
     };
