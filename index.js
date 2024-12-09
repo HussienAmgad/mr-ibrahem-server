@@ -129,6 +129,50 @@ app.post('/Loginassistant', async (req, res) => {
     res.status(500).json({ message: 'حدث خطأ أثناء تسجيل الدخول', error: error.message });
   }
 });
+app.post('/loginmr', async (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({ message: 'رقم هاتف الطالب وولي الأمر مطلوبان' });
+  }
+
+  try {
+    const database = client.db("Mr");
+    const collection = database.collection("admin");
+
+    // البحث عن الطالب باستخدام رقم الهاتف
+    const student = await collection.findOne({
+      username: username,
+      password: password
+    });
+
+    if (!student) {
+      return res.status(404).json({ message: 'الطالب أو رقم الهاتف غير صحيح' });
+    }
+
+    // توليد التوكن
+      // توليد التوكن مع فترة صلاحية
+      const token = jwt.sign({
+        id: student._id,  // استخدم _id بدلاً من id إذا كان موجودًا في قاعدة البيانات
+        name: student.name,
+        statues: student.statues,
+    }, '27071977', { expiresIn: '1h' });  // تحديد فترة الصلاحية
+    // إعادة التوكن مع بيانات الطالب
+    res.status(200).json({
+      message: 'تم تسجيل الدخول بنجاح',
+      token: token,
+      student: {
+        name: student.name,
+        username: student.username,
+        password: student.password
+      }
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'حدث خطأ أثناء تسجيل الدخول', error: error.message });
+  }
+});
 app.post('/addstudent', async (req, res) => {
   try {
     const database = client.db("Mr");
