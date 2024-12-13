@@ -225,7 +225,7 @@ app.post('/prep1', async (req, res) => {
     const collection = database.collection("prep1");
 
     // استخراج البيانات المشتركة والطلاب من جسم الطلب
-    const { date, grade, center, students,nameassist  } = req.body;
+    const { date, grade, center, students,name  } = req.body;
 
     // إضافة grade و center و Exam و Attendance و Homework إلى كل طالب
     const studentsWithAdditionalData = students.map((student) => ({
@@ -247,7 +247,7 @@ app.post('/prep1', async (req, res) => {
       grade: grade || null,
       center: center || null,
       attendance, // استخدام العدد المحسوب
-      nameassist,
+      name,
       profit, // استخدام العدد المحسوب
       students: studentsWithAdditionalData,
     };
@@ -267,7 +267,7 @@ app.post('/prep2', async (req, res) => {
     const collection = database.collection("prep2");
 
     // استخراج البيانات المشتركة والطلاب من جسم الطلب
-    const { date, grade, center, students, nameassist  } = req.body;
+    const { date, grade, center, students, name  } = req.body;
 
     // إضافة grade و center و Exam و Attendance و Homework إلى كل طالب
     const studentsWithAdditionalData = students.map((student) => ({
@@ -290,7 +290,7 @@ app.post('/prep2', async (req, res) => {
       grade: grade || null,
       center: center || null,
       attendance, // استخدام العدد المحسوب
-      nameassist ,
+      name ,
       profit, // استخدام العدد المحسوب
       students: studentsWithAdditionalData,
     };
@@ -310,7 +310,7 @@ app.post('/prep3', async (req, res) => {
     const collection = database.collection("prep3");
     
     // استخراج البيانات المشتركة والطلاب من جسم الطلب
-    const { date, grade, center, students, nameassist  } = req.body;
+    const { date, grade, center, students, name  } = req.body;
     
     // إضافة grade و center و Exam و Attendance و Homework إلى كل طالب
     const studentsWithAdditionalData = students.map((student) => ({
@@ -334,7 +334,7 @@ app.post('/prep3', async (req, res) => {
       center: center || null,
       attendance, // استخدام العدد المحسوب
       profit, // استخدام العدد المحسوب
-      nameassist ,
+      name ,
       students: studentsWithAdditionalData,
     };
     
