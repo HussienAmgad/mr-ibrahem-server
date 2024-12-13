@@ -361,7 +361,7 @@ app.put('/update/:collection/:id', async (req, res) => {
     const collectionRef = database.collection(collection);
 
     // استخراج البيانات المشتركة والطلاب من جسم الطلب
-    const { date, grade, center, students, nameassist  } = req.body;
+    const { date, grade, center, students, modified  } = req.body;
 
     if (!Array.isArray(students)) {
       return res.status(400).json({ error: 'Invalid students format. Expected an array.' });
@@ -388,7 +388,7 @@ app.put('/update/:collection/:id', async (req, res) => {
         grade: grade || null,
         center: center || null,
         attendance, // استخدام العدد المحسوب
-        nameassist,
+        modified,
         profit, // استخدام العدد المحسوب
         students: studentsWithAdditionalData,
       },
